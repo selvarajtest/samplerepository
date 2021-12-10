@@ -288,7 +288,9 @@ public class BaseClass {
 			return ele;
 		}
 	//
-		
+		public void sampleAdd() {
+			System.out.println("started GITHUB and Checks for modified code update push");
+		}
 		
 		
 	
