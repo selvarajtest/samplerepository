@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite guice-stage="DEVELOPMENT" name="Failed suite [Suite]" parallel="classes">
-  <parameter name="password" value="pass"/>
-  <parameter name="username" value="ram"/>
-  <test thread-count="5" name="Test(failed)" parallel="classes">
+<suite guice-stage="DEVELOPMENT" name="Failed suite [Suite]" parallel="tests">
+  <test thread-count="5" name="Test2(failed)" parallel="tests">
+    <parameter name="user" value="John"/>
     <classes>
       <class name="org.framework.TestNGDemo">
         <methods>
@@ -11,5 +10,5 @@
         </methods>
       </class> <!-- org.framework.TestNGDemo -->
     </classes>
-  </test> <!-- Test(failed) -->
+  </test> <!-- Test2(failed) -->
 </suite> <!-- Failed suite [Suite] -->

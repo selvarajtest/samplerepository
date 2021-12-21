@@ -2,6 +2,7 @@ package org.framework;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 public class DataProvi {
@@ -14,21 +15,23 @@ public class DataProvi {
 //			{"shai","shai@123"}
 //		};
 //	}
+	
+	@Parameters({"username"})
 	@Test
-	public void tc22() {	
-		System.out.println(Thread.currentThread().getId());
+	public void tc22(String s2) {	
+		System.out.println("data provi:"+Thread.currentThread().getId() + "- " + s2);
 	}
 	
-	@Test
-	public void tc21() {
-		System.out.println(Thread.currentThread().getId());
-	}
-	
-	@Test
-	public void tc23()  {
-		System.out.println(Thread.currentThread().getId());
-	}
-	
+//	@Test
+//	public void tc21() {
+//		System.out.println(Thread.currentThread().getId());
+//	}
+//	
+//	@Test
+//	public void tc23()  {
+//		System.out.println(Thread.currentThread().getId());
+//	}
+//	
 	
 	
 }

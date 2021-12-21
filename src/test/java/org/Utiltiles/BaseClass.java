@@ -4,16 +4,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -24,21 +30,40 @@ public class BaseClass {
 	public static WebElement ele;
 	
 	
+	
+	
 	//chrome browser
 	public static void chromeLauch() {
 		WebDriverManager.chromedriver().setup();
 		driver = new ChromeDriver();
 	}
+	//close Browser
+	public static void closeChrome() {
+		driver.close();
+	}
+	
 	//url
 	public static void loadUrl(String url) {
 		driver.get(url);
 	}
+	//maximize
+	public static void winMax() {
+		driver.manage().window().maximize();
+	}
+	
+	//Implicitywait
+		public static void WaitImplicit(long time) {
+			driver.manage().timeouts().implicitlyWait(time, TimeUnit.SECONDS);
+		}
+	
 	//title
-	public static String title() {
+	public static String printTitle() {
 	 String title = driver.getTitle();
 	 return title;
 	}
-	// llocator
+	
+	// locator  - FaceBook
+	
 	//usermail
 	public static WebElement TxtUser() {
 		WebElement ele = driver.findElement(By.id("email"));
@@ -138,17 +163,62 @@ public class BaseClass {
 	public static void fbBtnlogin(WebElement ele) {
 		ele.click();
 	}
-	public static String getTxt() {
-		WebElement ele = driver.findElement(By.xpath("//div[@class='_9kq2']"));
+	public static String getTxtOfWebElement(WebElement ele) {
 		String txt = ele.getText();
 		return txt;
 	}
 	
+	public static void switchFrame(String nameorId) {
+		driver.switchTo().frame(nameorId);
+			}
+
+	public static void switchFramebyXpath(WebElement ele) {
+		driver.switchTo().frame(ele);
+			}
 
 	//fill 
 		public static void fill(WebElement ele, String name) {
 			ele.sendKeys(name);
 		}
+		
+		
+	// read xcel
+		
+		public static String readXcelData (String location, String sheet) throws IOException {
+			File f = new File(location);
+			FileInputStream fInput = new FileInputStream(f);
+			Workbook w = new XSSFWorkbook(fInput);
+			Sheet sh = w.getSheet(sheet);
+			String value="";
+			for (int i = 0; i < sh.getPhysicalNumberOfRows(); i++) {
+				Row r = sh.getRow(i);
+				System.out.println("   ");
+				for (int j = 0; j < r.getPhysicalNumberOfCells(); j++) {
+					Cell c = r.getCell(j);
+					if (c.getCellType()==1) {
+						value = c.getStringCellValue();
+						System.out.print(value + "            ");
+					}
+					else if (c.getCellType()==0) {
+						if (DateUtil.isCellDateFormatted(c)) {
+							
+							SimpleDateFormat sdf = new SimpleDateFormat();
+							value = 	sdf.format(c);
+							System.out.print(value+"           ");
+						}
+						else {
+							double num = c.getNumericCellValue();
+							long l = (long)num;
+							System.out.print(value.valueOf(num)+"              ");
+						}
+					}
+				}
+			}
+			return value;
+		}
+		
+		
+		
 		
 	//www.demoqa.com  -----user details
 	
@@ -232,11 +302,48 @@ public class BaseClass {
 			XSSFWorkbook w = new XSSFWorkbook(fin);
 			Sheet sh = w.getSheet("DataSheet");
 			Row r = sh.getRow(row);
+			String value="";
 			Cell c = r.getCell(cell);
-		 	String value = c.getStringCellValue();
+			int cellType = c.getCellType();
+			if (cellType==1) {
+				value = c.getStringCellValue();
+				return value;
+			}
+			else if (cellType==0) {
+				if (DateUtil.isCellDateFormatted(c)) {
+					Date dateCell = c.getDateCellValue();
+					SimpleDateFormat dateform = new SimpleDateFormat("dd/MM/YYYY");
+					value = dateform.format(dateCell);
+					return value;
+				}
+				else {
+					double numericCellValue = c.getNumericCellValue();
+					long l = (long)numericCellValue;
+					value=String.valueOf(l);
+					return value;
+				}
+				
+			}
 			return value;
 		}
 
+		
+	// adaction update orderNo in xcel	
+		public static void setDemoqaData(String bookingOrderNo) throws IOException {
+			File f =new File("C:\\Users\\Admin\\eclipse-workspace\\FrameworkTask\\xcelfiles\\demoqaReg.xlsx");
+			FileInputStream fin = new FileInputStream(f);
+			XSSFWorkbook w = new XSSFWorkbook(fin);
+			Sheet sh = w.getSheet("DataSheet");
+			Row r = sh.createRow(12);
+			Cell c = r.createCell(0);
+			c.setCellType(1);
+			c.setCellValue("BookingOrderNo = :" + bookingOrderNo);	
+			FileOutputStream fout = new FileOutputStream(f);
+			w.write(fout);
+			System.out.println("success updated in xcel Database");	
+		}
+			
+		
 		
 	// demoqa ----firstname
 		public static WebElement firstName() {
@@ -261,7 +368,7 @@ public class BaseClass {
 		}
 		public static void selectCountry(WebElement ele) {
 			Select s = new Select(ele);
-			s.selectByVisibleText("India");
+			s.selectByValue("4");
 		}
 		public static WebElement city() {
 			WebElement ele = driver.findElement(By.id("city"));
@@ -282,6 +389,8 @@ public class BaseClass {
 		public static void btnClick(WebElement ele) {
 			ele.click();
 		}
+		
+		
 		//smallpop up at login time
 		public static WebElement popupWind() {
 			WebElement ele = driver.findElement(By.className("modal__close"));
@@ -291,8 +400,43 @@ public class BaseClass {
 		public void sampleAdd() {
 			System.out.println("started GITHUB and Checks for modified code update push");
 		}
+	// Actions class ---- mouse over
+		public static void mouseOver(WebElement ele) {
+			Actions a = new Actions(driver);
+			a.moveToElement(ele).perform();
+		}
+		
+		
+		public static void mouseOverAndClick(WebElement ele) {
+			Actions a = new Actions(driver);
+			a.moveToElement(ele).click().perform();
+		}
+			
+	// JavaScript
+		public static void scrollAsTop(WebElement ele) {
+			JavascriptExecutor js = (JavascriptExecutor)driver;
+			js.executeScript("arguments[0].scrollIntoView(true)",ele);
+		}
+		public static void scrollAsBottom(WebElement ele) {
+			JavascriptExecutor js = (JavascriptExecutor)driver;
+			js.executeScript("arguments[0].scrollIntoView(false)",ele);
+		}
 		
 		
 	
+//Select Class
+		public static void selectOptText(WebElement ele, String Text) {
+			Select s = new Select(ele);
+			s.selectByVisibleText(Text);
+		}
+		
+		public static void selectOptValue(WebElement ele, String Text) {
+			Select s = new Select(ele);
+			s.selectByValue(Text);
+		}
 	
+		public static void selectOptIndex(WebElement ele, int index) {
+			Select s = new Select(ele);
+			s.selectByIndex(index);
+		}
 }

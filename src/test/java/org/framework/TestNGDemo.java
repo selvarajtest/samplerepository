@@ -144,21 +144,18 @@ public class TestNGDemo extends BaseClass{
 	
 	
 	// parallel execution - At tests
+	@Parameters({"username"})
 	@Test
-	public void tc41() {
-		String s = "";
-		String s1 = "ram";
-		if (s.equals("pass")) {
-			System.out.println("test1");
+	public void tc41(String s) {
+		if (s.equals("mathew")) {
+			System.out.println("tc41 : "+ "thread : "+ Thread.currentThread().getId() +" - "+ s);
 		}
-		else if(s.equals("")) {
-			System.out.println("test2");
-		}
-		else {
-			System.out.println("test3");
+		else if (s.equals("ram")) {
+			System.out.println("tc41 : "+ "thread : "+ Thread.currentThread().getId() +" - "+ s);
 		}
 		
 	}
+	
 	
 	
 	
